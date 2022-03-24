@@ -12,8 +12,8 @@ def standard(file, dim):
             for i in range(dim):
                 sum = 0
                 for k in range(dim):
-                    row[k] = int(lines[k + r*dim])
-                    col[k] = int(lines[k*dim + i + offset])
+                    row[k] = int(lines[k + r * dim])
+                    col[k] = int(lines[k * dim + i + offset])
                     sum += row[k] * col[k]
                 out[r][i] = sum
     '''
