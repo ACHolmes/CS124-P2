@@ -42,7 +42,7 @@ def to_matrices(file, dim, size):
 
 
 
-def strassen (a, b, dim):
+def get_size (dim):
     #a_np = np.matrix(a)
     #b_np = np.matrix(b)
 
@@ -54,18 +54,19 @@ def strassen (a, b, dim):
         counter = counter + 1
     pad = dim - 2**(counter)
     size = dim + pad
+    return size
 
-    for row in a:
-        for i in range(pad):
-            row.append(0)
-    for rowb in b:
-        for i in range(pad):
-            rowb.append(0)
-    b_new = b
-    a_new = a
-    for i in range(pad):
-        a_new.append([0] * size)
-        b_new.append([0] * size)
+    # for row in a:
+    #     for i in range(pad):
+    #         row.append(0)
+    # for rowb in b:
+    #     for i in range(pad):
+    #         rowb.append(0)
+    # b_new = b
+    # a_new = a
+    # for i in range(pad):
+    #     a_new.append([0] * size)
+    #     b_new.append([0] * size)
 
 
 
