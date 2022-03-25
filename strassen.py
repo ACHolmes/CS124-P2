@@ -29,8 +29,8 @@ def standard(file, dim):
 9 9 18 '''
 
 def strassen (a, b, dim):
-    a_np = np.matrix(a)
-    b_np = np.matrix(b)
+    #a_np = np.matrix(a)
+    #b_np = np.matrix(b)
 
     #size = np.sqrt(a_np.size)
     dim_use = dim
@@ -41,7 +41,19 @@ def strassen (a, b, dim):
     pad = dim - 2**(counter)
     size = dim + pad
 
-    
+    for row in a:
+        for i in range(pad):
+            row.append(0)
+    for rowb in b:
+        for i in range(pad):
+            rowb.append(0)
+    b_new = b
+    a_new = a
+    for i in range(pad):
+        a_new.append([0] * size)
+        b_new.append([0] * size)
+
+
 
 
 
