@@ -40,33 +40,15 @@ def to_matrices(file, dim, size):
                 matB[j][i] = int(lines[i + j*dim + offset])
     return (matA, matB)
 
-
-
 def get_size (dim):
-    #a_np = np.matrix(a)
-    #b_np = np.matrix(b)
-
-    #size = np.sqrt(a_np.size)
     dim_use = dim
     counter = 0
-    while size > 1:
+    while dim_use > 1:
         dim_use = dim_use / 2
         counter = counter + 1
-    pad = dim - 2**(counter)
+    pad = 2**(counter) - dim
     size = dim + pad
     return size
-
-    # for row in a:
-    #     for i in range(pad):
-    #         row.append(0)
-    # for rowb in b:
-    #     for i in range(pad):
-    #         rowb.append(0)
-    # b_new = b
-    # a_new = a
-    # for i in range(pad):
-    #     a_new.append([0] * size)
-    #     b_new.append([0] * size)
 
 
 
@@ -80,8 +62,10 @@ def main():
         return 1
     flag = sys.argv[1]
     dim = int(sys.argv[2])
+    size = get_size(dim)
+    print(size)
     file = sys.argv[3]
-    print(to_matrices(file, dim, 4))
+    print(to_matrices(file, dim, size))
     print(standard(file, 3))
         
 
