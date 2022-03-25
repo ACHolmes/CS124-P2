@@ -28,6 +28,20 @@ def standard(file, dim):
 18 15 27 
 9 9 18 '''
 
+def to_matrices(file, dim, size):
+    matA = [[0 for x in range(size)] for y in range(size)] 
+    matB = [[0 for x in range(size)] for y in range(size)] 
+    offset = dim**2
+    with open(file) as input:
+        lines = input.readlines()
+        for i in range(dim):
+            for j in range(dim):
+                matA[j][i] = int(lines[i + j*dim])
+                matB[j][i] = int(lines[i + j*dim + offset])
+    return (matA, matB)
+
+
+
 def strassen (a, b, dim):
     a_np = np.matrix(a)
     b_np = np.matrix(b)
@@ -52,8 +66,9 @@ def main():
         print("Usage: python3 strassen.py flag dimension inputfile")
         return 1
     flag = sys.argv[1]
-    dim = sys.argv[2]
+    dim = int(sys.argv[2])
     file = sys.argv[3]
+    print(to_matrices(file, dim, 4))
     print(standard(file, 3))
         
 
