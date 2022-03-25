@@ -93,6 +93,18 @@ def strassen(matA, matB, size):
     c21 = mat_add(p3, p4)           
     c22 = mat_sub(mat_sub(mat_add(p1, p5), p3), p7) 
 
+    #make full matrix and go home
+    C = []
+    for row in c11:
+        for r in c12:
+            C.append(row.append(r))
+    C_bottom = []
+    for row in c21:
+        for r in c22:
+            C_bottom.append(row.append(r))
+    C.append(C_bottom)
+    return C
+
 def main():
     if (len(sys.argv) != 4):
         print("Usage: python3 strassen.py flag dimension inputfile")
