@@ -62,30 +62,35 @@ def mat_sub(a, b, size):
             a[i][j] = a[i][j] - b[i][j]
     return a
 
-def strassen(matA, matB, size):
-    ns = size / 2
-    helper = matA.slice(0 , ns)
-    a = [row.slice(0, ns) for row in helper]
-    b = [row.slice(ns, size) for row in helper]
-    helper = matA.slice(ns, size)
-    c = [row.slice(0, ns) for row in helper]
-    d = [row.slice(ns, size) for row in helper]
+def strassen(matA, matB, size, n0):
 
-    helper = matB.slice(0 , ns)
-    e = [row.slice(0, ns) for row in helper]
-    f = [row.slice(ns, size) for row in helper]
-    helper = matB.slice(ns, size)
-    g = [row.slice(0, ns) for row in helper]
-    h = [row.slice(ns, size) for row in helper]
+    if size == n0:
+        return standard(matA, matB, size)
 
+    ns = int(size / 2)
+    print(ns)
+    helper = matA[0: ns]
+    a = [row[0: ns] for row in helper]
+    b = [row[ns: size] for row in helper]
+    helper = matA[ns: size]
+    c = [row[0: ns] for row in helper]
+    d = [row[ns: size] for row in helper]
 
-    p1 = strassen(a, f - h, ns) 
-    p2 = strassen(a + b, h, ns)       
-    p3 = strassen(c + d, e, ns)       
-    p4 = strassen(d, g - e, ns)       
-    p5 = strassen(a + d, e + h, ns)       
-    p6 = strassen(b - d, g + h, ns) 
-    p7 = strassen(a - c, e + f, ns) 
+    helper = matB[0: ns]
+    e = [row[0: ns] for row in helper]
+    f = [row[ns: size] for row in helper]
+    helper = matB[ns: size]
+    g = [row[0: ns] for row in helper]
+    h = [row[ns: size] for row in helper]
+
+    print(a)
+    p1 = strassen(a, mat_sub(f, h, ns), ns, n0) 
+    p2 = strassen(mat_add(a, b, ns), h, ns, n0)       
+    p3 = strassen(mat_add(c, d, ns), e, ns, n0)       
+    p4 = strassen(d, mat_sub(g, e, ns), ns, n0)       
+    p5 = strassen(mat_add(a, d, ns), mat_add(e, h, ns), ns, n0)       
+    p6 = strassen(mat_sub(b, d, ns), mat_add(g, h, ns), ns, n0) 
+    p7 = strassen(mat_sub(a, c, ns),mat_add(e, f, ns), ns, n0) 
  
     # Computing the values of the 4 quadrants of the final matrix c
     c11 = mat_add(mat_sub(mat_add(p5, p4), p2), p6)
@@ -112,11 +117,10 @@ def main():
     flag = sys.argv[1]
     dim = int(sys.argv[2])
     size = get_size(dim)
-    print(size)
     file = sys.argv[3]
-    print(to_matrices(file, dim, size))
+    matrices = to_matrices(file, dim, size)
     print(standard(file, 3))
-        
+    print(strassen(matrices[0], matrices[1], size, 2))
 
 if __name__ == "__main__":
     main()
