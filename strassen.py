@@ -50,6 +50,49 @@ def get_size (dim):
     size = dim + pad
     return size
 
+def mat_add(a, b, size):
+    for i in range(size):
+        for j in range(size):
+            a[i][j] = a[i][j] + b[i][j]
+    return a
+
+def mat_sub(a, b, size):
+    for i in range(size):
+        for j in range(size):
+            a[i][j] = a[i][j] - b[i][j]
+    return a
+
+def strassen(matA, matB, size):
+    ns = size / 2
+    helper = matA.slice(0 , ns)
+    a = [row.slice(0, ns) for row in helper]
+    b = [row.slice(ns, size) for row in helper]
+    helper = matA.slice(ns, size)
+    c = [row.slice(0, ns) for row in helper]
+    d = [row.slice(ns, size) for row in helper]
+
+    helper = matB.slice(0 , ns)
+    e = [row.slice(0, ns) for row in helper]
+    f = [row.slice(ns, size) for row in helper]
+    helper = matB.slice(ns, size)
+    g = [row.slice(0, ns) for row in helper]
+    h = [row.slice(ns, size) for row in helper]
+
+
+    p1 = strassen(a, f - h, ns) 
+    p2 = strassen(a + b, h, ns)       
+    p3 = strassen(c + d, e, ns)       
+    p4 = strassen(d, g - e, ns)       
+    p5 = strassen(a + d, e + h, ns)       
+    p6 = strassen(b - d, g + h, ns) 
+    p7 = strassen(a - c, e + f, ns) 
+ 
+    # Computing the values of the 4 quadrants of the final matrix c
+    c11 = mat_add(mat_sub(mat_add(p5, p4), p2), p6)
+    c12 = mat_add(p1, p2)          
+    c21 = mat_add(p3, p4)           
+    c22 = mat_sub(mat_sub(mat_add(p1, p5), p3), p7) 
+
 def main():
     if (len(sys.argv) != 4):
         print("Usage: python3 strassen.py flag dimension inputfile")
