@@ -50,12 +50,6 @@ def get_size (dim):
     size = dim + pad
     return size
 
-
-
-
-
-
-
 def main():
     if (len(sys.argv) != 4):
         print("Usage: python3 strassen.py flag dimension inputfile")
