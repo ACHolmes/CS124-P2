@@ -28,6 +28,24 @@ def standard(file, dim):
 18 15 27 
 9 9 18 '''
 
+def strassen (a, b, dim):
+    a_np = np.matrix(a)
+    b_np = np.matrix(b)
+
+    #size = np.sqrt(a_np.size)
+    dim_use = dim
+    counter = 0
+    while size > 1:
+        dim_use = dim_use / 2
+        counter = counter + 1
+    pad = dim - 2**(counter)
+    size = dim + pad
+
+    
+
+
+
+
 
 def main():
     if (len(sys.argv) != 4):
@@ -36,7 +54,7 @@ def main():
     flag = sys.argv[1]
     dim = sys.argv[2]
     file = sys.argv[3]
-    standard(file, 3)
+    print(standard(file, 3))
         
 
 if __name__ == "__main__":
