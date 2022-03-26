@@ -120,7 +120,7 @@ def main():
     if (len(sys.argv) != 4):
         print("Usage: python3 strassen.py flag dimension inputfile")
         return 1
-    flag = sys.argv[1]
+    flag = int(sys.argv[1])
     dim = int(sys.argv[2])
     size = get_size(dim)
     file = sys.argv[3]
@@ -129,12 +129,20 @@ def main():
     #print(matrices[1])
     #print_mat(strassen(matrices[0], matrices[1], size, 2))
     print(" ")
-    print(triangles(1.1, 8))
+    total = 0
+    for i in range(flag):
+        r = triangles(0.04, 16)
+        print(r)
+        total += r
+    print("Average: ", end = "")
+    print(total / flag)
 
 ''' Desired output:
 6 2 16
 18 15 27 
 9 9 18 '''
+
+# 22304.128 expected, 22423 average found
 
 
 if __name__ == "__main__":
