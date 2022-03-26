@@ -1,32 +1,16 @@
 import numpy as np
 import sys
 
-def standard(file, dim):
-    row = [0] * dim
-    col = [0] * dim
-    offset = dim**2
-    out = [[0 for x in range(dim)] for y in range(dim)] 
-    with open(file) as input:
-        lines = input.readlines()
-        for r in range(dim):
-            for i in range(dim):
-                sum = 0
-                for k in range(dim):
-                    row[k] = int(lines[k + r * dim])
-                    col[k] = int(lines[k * dim + i + offset])
-                    sum += row[k] * col[k]
-                out[r][i] = sum
-    '''
-    for k in out:
-        for j in k:
-            print(j)
-    '''
+def standard(matA, matB, size):
+    out = [[0 for x in range(size)] for y in range(size)] 
+    for x in range(size):
+        for y in range(size):
+            sum = 0
+            for i in range(size):
+                sum += matA[x][i] * matB[i][y]
+            out[x][y] = sum
     return out
 
-''' Desired output:
-6 2 16
-18 15 27 
-9 9 18 '''
 
 def to_matrices(file, dim, size):
     matA = [[0 for x in range(size)] for y in range(size)] 
@@ -51,24 +35,25 @@ def get_size (dim):
     return size
 
 def mat_add(a, b, size):
+    out = [[0 for x in range(size)] for y in range(size)]
     for i in range(size):
         for j in range(size):
-            a[i][j] = a[i][j] + b[i][j]
-    return a
+            out[i][j] = a[i][j] + b[i][j]
+    return out
 
 def mat_sub(a, b, size):
+    out = [[0 for x in range(size)] for y in range(size)]
     for i in range(size):
         for j in range(size):
-            a[i][j] = a[i][j] - b[i][j]
-    return a
+            out[i][j] = a[i][j] - b[i][j]
+    return out
 
 def strassen(matA, matB, size, n0):
 
-    if size == n0:
+    if size <= n0:
         return standard(matA, matB, size)
 
     ns = int(size / 2)
-    print(ns)
     helper = matA[0: ns]
     a = [row[0: ns] for row in helper]
     b = [row[ns: size] for row in helper]
@@ -83,32 +68,30 @@ def strassen(matA, matB, size, n0):
     g = [row[0: ns] for row in helper]
     h = [row[ns: size] for row in helper]
 
-    print(a)
-    p1 = strassen(a, mat_sub(f, h, ns), ns, n0) 
-    p2 = strassen(mat_add(a, b, ns), h, ns, n0)       
-    p3 = strassen(mat_add(c, d, ns), e, ns, n0)       
-    p4 = strassen(d, mat_sub(g, e, ns), ns, n0)       
-    p5 = strassen(mat_add(a, d, ns), mat_add(e, h, ns), ns, n0)       
-    p6 = strassen(mat_sub(b, d, ns), mat_add(g, h, ns), ns, n0) 
-    p7 = strassen(mat_sub(a, c, ns),mat_add(e, f, ns), ns, n0) 
- 
+    p1 = strassen(mat_sub(b, d, ns), mat_add(g, h, ns), ns, n0) 
+    p2 = strassen(mat_add(a, d, ns), mat_add(e, h, ns), ns, n0) 
+    p3 = strassen(mat_sub(a, c, ns),mat_add(e, f, ns), ns, n0)  
+    p4 = strassen(mat_add(a, b, ns), h, ns, n0)  
+    p5 = strassen(a, mat_sub(f, h, ns), ns, n0) 
+    p6 = strassen(d, mat_sub(g, e, ns), ns, n0)  
+    p7 = strassen(mat_add(c, d, ns), e, ns, n0)    
+        
+    
     # Computing the values of the 4 quadrants of the final matrix c
-    c11 = mat_add(mat_sub(mat_add(p5, p4), p2), p6)
-    c12 = mat_add(p1, p2)          
-    c21 = mat_add(p3, p4)           
-    c22 = mat_sub(mat_sub(mat_add(p1, p5), p3), p7) 
+    c11 = mat_sub(mat_add(p1, mat_add(p2, p6, ns), ns), p4, ns)
+    c12 = mat_add(p4, p5, ns)          
+    c21 = mat_add(p6, p7, ns)           
+    c22 = mat_sub(mat_sub(mat_add(p2, p5, ns), p7, ns), p3, ns)
 
-    #make full matrix and go home
-    C = []
-    for row in c11:
-        for r in c12:
-            C.append(row.append(r))
-    C_bottom = []
-    for row in c21:
-        for r in c22:
-            C_bottom.append(row.append(r))
-    C.append(C_bottom)
-    return C
+    result = [[0 for x in range(size)] for y in range(size)]
+    for i in range(0, ns):
+        for j in range(0, ns):
+            result[i][j] = c11[i][j]
+            result[i + ns][j] = c21[i][j]
+            result[i][j + ns] = c12[i][j]
+            result[i + ns][j + ns] = c22[i][j]
+
+    return result
 
 def main():
     if (len(sys.argv) != 4):
@@ -119,8 +102,15 @@ def main():
     size = get_size(dim)
     file = sys.argv[3]
     matrices = to_matrices(file, dim, size)
-    print(standard(file, 3))
+    print(matrices[0])
+    print(matrices[1])
     print(strassen(matrices[0], matrices[1], size, 2))
+
+''' Desired output:
+6 2 16
+18 15 27 
+9 9 18 '''
+
 
 if __name__ == "__main__":
     main()
