@@ -1,5 +1,6 @@
 import numpy as np
 import sys
+import random
 
 def standard(matA, matB, size):
     out = [[0 for x in range(size)] for y in range(size)] 
@@ -99,6 +100,22 @@ def print_mat(matA):
             print(str(i), end = " ")
         print("")
 
+def triangles(p, n0):
+    A = [[0 for x in range(1024)] for y in range(1024)]
+    for i in range(1024):
+        for j in range(1024):
+            if i == j:
+                continue
+            if random.random() < p:
+                A[i][j] = 1
+    result = strassen(strassen(A, A, 1024, n0), A, 1024, n0)
+    print_mat(result)
+    sum = 0
+    for i in range(1024):
+        sum += result[i][i]
+    return int(sum / 6)
+
+
 
 def main():
     if (len(sys.argv) != 4):
@@ -111,7 +128,9 @@ def main():
     matrices = to_matrices(file, dim, size)
     #print(matrices[0])
     #print(matrices[1])
-    print_mat(strassen(matrices[0], matrices[1], size, 2))
+    #print_mat(strassen(matrices[0], matrices[1], size, 2))
+    print(" ")
+    print(triangles(1.1, 8))
 
 ''' Desired output:
 6 2 16
