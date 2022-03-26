@@ -93,6 +93,13 @@ def strassen(matA, matB, size, n0):
 
     return result
 
+def print_mat(matA):
+    for row in matA:
+        for i in row:
+            print(str(i), end = " ")
+        print("")
+
+
 def main():
     if (len(sys.argv) != 4):
         print("Usage: python3 strassen.py flag dimension inputfile")
@@ -102,9 +109,9 @@ def main():
     size = get_size(dim)
     file = sys.argv[3]
     matrices = to_matrices(file, dim, size)
-    print(matrices[0])
-    print(matrices[1])
-    print(strassen(matrices[0], matrices[1], size, 2))
+    #print(matrices[0])
+    #print(matrices[1])
+    print_mat(strassen(matrices[0], matrices[1], size, 2))
 
 ''' Desired output:
 6 2 16
