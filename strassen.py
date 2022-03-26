@@ -77,8 +77,6 @@ def strassen(matA, matB, size, n0):
     p6 = strassen(d, mat_sub(g, e, ns), ns, n0)  
     p7 = strassen(mat_add(c, d, ns), e, ns, n0)    
         
-    
-    # Computing the values of the 4 quadrants of the final matrix c
     c11 = mat_sub(mat_add(p1, mat_add(p2, p6, ns), ns), p4, ns)
     c12 = mat_add(p4, p5, ns)          
     c21 = mat_add(p6, p7, ns)           
@@ -124,25 +122,14 @@ def main():
     dim = int(sys.argv[2])
     size = get_size(dim)
     file = sys.argv[3]
-    matrices = to_matrices(file, dim, size)
-    #print(matrices[0])
-    #print(matrices[1])
-    #print_mat(strassen(matrices[0], matrices[1], size, 2))
     print(" ")
     total = 0
     for i in range(flag):
-        r = triangles(0.04, 16)
+        r = triangles(0.01, 16)
         print(r)
         total += r
     print("Average: ", end = "")
     print(total / flag)
-
-''' Desired output:
-6 2 16
-18 15 27 
-9 9 18 '''
-
-# 22304.128 expected, 22423 average found
 
 
 if __name__ == "__main__":
