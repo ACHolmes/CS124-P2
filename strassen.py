@@ -109,7 +109,6 @@ def triangles(p, n0):
             if random.random() < p:
                 A[i][j] = 1
     result = strassen(strassen(A, A, 1024, n0), A, 1024, n0)
-    print_mat(result)
     sum = 0
     for i in range(1024):
         sum += result[i][i]
