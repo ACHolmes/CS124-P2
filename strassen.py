@@ -92,6 +92,9 @@ def strassen(matA, matB, size, n0):
 
     return result
 
+    # want to only get the non-zero column/rows out of the above
+    # and also the end result should be only printing the numbers on the main diagonal.
+
 def print_mat(matA):
     for row in matA:
         for i in row:
