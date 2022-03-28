@@ -11,12 +11,15 @@ def main():
     file = sys.argv[3]
     print(" ")
     total = 0
+    (A,B) = to_matrices(file, dim, size)
     for i in range(flag):
-        for j in range(11):
+        for j in range(12):
+            i_use = 2**(j+1)
+            print(i_use)
             t = time.perf_counter()
-            a = triangles(0.01, 2**j)
+            a = strassen(A, B, size, i_use)
             ta = time.perf_counter()
-            print("n0 " + str(2**j) + " time: " + str(t - ta))
+            print("n0 " + str(i_use) + " time: " + str(t - ta))
 
 
 if __name__ == "__main__":
