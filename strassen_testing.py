@@ -19,7 +19,7 @@ def main():
             t = time.perf_counter()
             a = strassen(A, B, size, i_use)
             ta = time.perf_counter()
-            print("n0 " + str(i_use) + " time: " + str(t - ta))
+            print("n0 " + str(i_use) + " time: " + str(ta - t))
 
 
 if __name__ == "__main__":
