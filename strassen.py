@@ -1,3 +1,4 @@
+from sqlite3 import NotSupportedError
 import numpy as np
 import sys
 import random
@@ -51,17 +52,23 @@ def mat_sub(a, b, size):
 
 def mat_sub_opt(a, b, xa, ya, xb, yb, size):
     out = [[0 for p in range(size)] for q in range(size)]
-    for i in range(size):
-        for j in range(size):
-            out[i][j] = a[xa + i][ya + j] - b[xb + i][yb + j]
+    for i in range(0, size):
+        for j in range(0, size):
+            out[i][j] = a[xa + i][ya + j] - b[i + xb][j + yb]
     return out
 
 def mat_add_opt(a, b, xa, ya, xb, yb, size):
     out = [[0 for p in range(size)] for q in range(size)]
-    for i in range(size):
-        for j in range(size):
+    for i in range(0, size):
+        for j in range(0, size):
             out[i][j] = a[xa + i][ya + j] + b[xb + i][yb + j]
     return out
+
+def print_submat(mat, x, y, size):
+    for i in range(size):
+        for j in range(size):
+            print(mat[x + i][y + j], end = " ")
+        print('')
 
 def strassen_opt(matA, matB, size, n0, xa, ya, xb, yb):
     if size <= n0:
@@ -69,22 +76,20 @@ def strassen_opt(matA, matB, size, n0, xa, ya, xb, yb):
 
     ns = int(size / 2)
 
-    ax = cx = xa + ns
-    ay = by = ya + ns
-    bx = dx = xa
-    cy = dy = ya
+    ax = cy = xa
+    ay = bx = ya
+    by = dx = xa + ns
+    cx = dy = ya + ns
 
-    ex = gx = xb + ns
-    ey = fy = yb + ns
-    fx = hx = xb
-    gy = hy = yb 
+    ex = gy = xb
+    ey = fx = yb
+    fy = hx = xb + ns
+    gx = hy = yb + ns
 
     p1 = strassen_opt(mat_sub_opt(matA, matB, bx, by, dx, dy, ns), mat_add_opt(matB, matB, gx, gy, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
     p2 = strassen_opt(mat_add_opt(matA, matA, ax,ay, dx, dy, ns), mat_add_opt(matB, matB, ex, ey, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
     p3 = strassen_opt(mat_sub_opt(matA, matA, ax, ay, cx, cy, ns), mat_add_opt(matB, matB, ex, ey, fx, fy, ns), ns, n0, 0, 0, 0, 0)  
-    print(mat_sub_opt(matA, matA, ax, ay, cx, cy, ns))
-    print( mat_add_opt(matB, matB, ex, ey, fx, fy, ns))
-    p4 = strassen_opt(mat_add_opt(matA, matA, ax, ay, bx, by, ns), matB, ns, n0, 0, 0, hx, hy)  
+    p4 = strassen_opt(mat_add_opt(matA, matA, ax, ay, bx, by, ns), matB, ns, n0, 0, 0, hx, hy)
     p5 = strassen_opt(matA, mat_sub_opt(matB, matB, fx, fy, hx, hy, ns), ns, n0, ax, ay, 0, 0) 
     p6 = strassen_opt(matA, mat_sub_opt(matB, matB, gx, gy, ex, ey, ns), ns, n0, dx, dy, 0, 0)  
     p7 = strassen_opt(mat_add_opt(matA, matA, 0, ns, ns, ns, ns), matB, ns, n0, 0, 0, ex, ey)    
@@ -170,6 +175,9 @@ def triangles(p, n0):
         sum += result[i][i]
     return int(sum / 6)
 
+def final_result(mat, dim):
+    for i in range(dim):
+        print(mat[i][i])
 
 
 def main():
@@ -185,20 +193,12 @@ def main():
 
     #print(matrices[0])
     #print(matrices[1])
-
-
-    print(" ")
     
-
-
-    
-
-    print(strassen_opt(matrices[0], matrices[1], size, 4, 0, 0, 0, 0))
-    #print(strassen(matrices[0], matrices[1], 7, 4))
-    print('optimizied above, standard beneath')
-    print(standard(matrices[0], matrices[1], size))
-    
-    
+    result = strassen(matrices[0], matrices[1], size, 4)
+    final_result(result, dim)
+    #print(strassen(matrices[0], matrices[1], 8, 5))
+    #print('optimizied above, standard beneath')
+    #print(standard(matrices[0], matrices[1], size))
     #total = 0
     '''
 
