@@ -4,7 +4,7 @@ def filemaker(matrix_size):
     inp = []
     nums_needed = 2 * matrix_size**2
     for i in range(nums_needed):
-        inp.append(random.randint(0,20))
+        inp.append(random.randint(0,2))
     return inp
 
 def to_txt(lst, filename):
