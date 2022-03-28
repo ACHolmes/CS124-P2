@@ -49,6 +49,69 @@ def mat_sub(a, b, size):
             out[i][j] = a[i][j] - b[i][j]
     return out
 
+def mat_sub_opt(a, b, xa, ya, xb, yb, size):
+    out = [[0 for p in range(size)] for q in range(size)]
+    for i in range(size):
+        for j in range(size):
+            out[i][j] = a[xa + i][ya + j] - b[xb + i][yb + j]
+    return out
+
+def mat_add_opt(a, b, xa, ya, xb, yb, size):
+    out = [[0 for p in range(size)] for q in range(size)]
+    for i in range(size):
+        for j in range(size):
+            out[i][j] = a[xa + i][ya + j] + b[xb + i][yb + j]
+    return out
+
+def strassen_opt(matA, matB, size, n0, xa, ya, xb, yb):
+    if size <= n0:
+        return standard(matA, matB, size)
+
+    ns = int(size / 2)
+
+    ax = cx = xa
+    ay = by = ya
+    bx = dx = xa + ns
+    cy = dy = ya + ns
+
+    ex = gx = xb
+    ey = fy = yb
+    fx = hx = xb + ns
+    gy = hy = yb + ns  
+
+    p1 = strassen(mat_sub(b, d, ns), mat_add(g, h, ns), ns, n0) 
+    p2 = strassen(mat_add(a, d, ns), mat_add(e, h, ns), ns, n0) 
+    p3 = strassen(mat_sub(a, c, ns),mat_add(e, f, ns), ns, n0)  
+    p4 = strassen(mat_add(a, b, ns), h, ns, n0)  
+    p5 = strassen(a, mat_sub(f, h, ns), ns, n0) 
+    p6 = strassen(d, mat_sub(g, e, ns), ns, n0)  
+    p7 = strassen(mat_add(c, d, ns), e, ns, n0)
+
+
+    p1 = strassen_opt(mat_sub_opt(matA, matB, bx, by, dx, dy, ns), mat_add_opt(matB, matB, gx, gy, yb + ns, xb + ns, yb + ns), ns, n0, 0, 0, 0, 0) 
+    p2 = strassen_opt(mat_add_opt(matA, matA, xa + 0, ya + 0, xa + ns, ya + ns, ns), mat_add_opt(matB, matB, xb + 0, yb + 0, xb + ns, yb + ns, ns), ns, n0, 0, 0, 0, 0) 
+    p3 = strassen_opt(mat_sub_opt(matA, matA, xa + 0, ya + 0, xa + 0, ya + ns, ns), mat_add_opt(matB, matB, 0, 0, ns, 0, ns), ns, n0, 0, 0, 0, 0)  
+    p4 = strassen_opt(mat_add_opt(matA, matA, 0, 0, ns, 0, ns), matB, ns, n0, 0, 0, ns, ns)  
+    p5 = strassen_opt(matA, mat_sub_opt(matB, matB, ns, 0, ns, ns, ns), ns, n0, 0, 0, 0, 0) 
+    p6 = strassen_opt(matA, mat_sub_opt(matB, matB, 0, ns, 0, 0, ns), ns, n0, ns, ns, 0, 0)  
+    p7 = strassen_opt(mat_add_opt(matA, matA, 0, ns, ns, ns, ns), matB, ns, n0, 0, 0, 0, 0)    
+        
+    c11 = mat_sub(mat_add(p1, mat_add(p2, p6, ns), ns), p4, ns)
+    c12 = mat_add(p4, p5, ns)          
+    c21 = mat_add(p6, p7, ns)           
+    c22 = mat_sub(mat_sub(mat_add(p2, p5, ns), p7, ns), p3, ns)
+
+    result = [[0 for x in range(size)] for y in range(size)]
+    for i in range(0, ns):
+        for j in range(0, ns):
+            result[i][j] = c11[i][j]
+            result[i + ns][j] = c21[i][j]
+            result[i][j + ns] = c12[i][j]
+            result[i + ns][j + ns] = c22[i][j]
+ 
+ 
+    return result
+
 def strassen(matA, matB, size, n0):
 
     if size <= n0:
