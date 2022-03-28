@@ -69,32 +69,25 @@ def strassen_opt(matA, matB, size, n0, xa, ya, xb, yb):
 
     ns = int(size / 2)
 
-    ax = cx = xa
-    ay = by = ya
-    bx = dx = xa + ns
-    cy = dy = ya + ns
+    ax = cx = xa + ns
+    ay = by = ya + ns
+    bx = dx = xa
+    cy = dy = ya
 
-    ex = gx = xb
-    ey = fy = yb
-    fx = hx = xb + ns
-    gy = hy = yb + ns  
+    ex = gx = xb + ns
+    ey = fy = yb + ns
+    fx = hx = xb
+    gy = hy = yb 
 
-    p1 = strassen(mat_sub(b, d, ns), mat_add(g, h, ns), ns, n0) 
-    p2 = strassen(mat_add(a, d, ns), mat_add(e, h, ns), ns, n0) 
-    p3 = strassen(mat_sub(a, c, ns),mat_add(e, f, ns), ns, n0)  
-    p4 = strassen(mat_add(a, b, ns), h, ns, n0)  
-    p5 = strassen(a, mat_sub(f, h, ns), ns, n0) 
-    p6 = strassen(d, mat_sub(g, e, ns), ns, n0)  
-    p7 = strassen(mat_add(c, d, ns), e, ns, n0)
-
-
-    p1 = strassen_opt(mat_sub_opt(matA, matB, bx, by, dx, dy, ns), mat_add_opt(matB, matB, gx, gy, yb + ns, xb + ns, yb + ns), ns, n0, 0, 0, 0, 0) 
-    p2 = strassen_opt(mat_add_opt(matA, matA, xa + 0, ya + 0, xa + ns, ya + ns, ns), mat_add_opt(matB, matB, xb + 0, yb + 0, xb + ns, yb + ns, ns), ns, n0, 0, 0, 0, 0) 
-    p3 = strassen_opt(mat_sub_opt(matA, matA, xa + 0, ya + 0, xa + 0, ya + ns, ns), mat_add_opt(matB, matB, 0, 0, ns, 0, ns), ns, n0, 0, 0, 0, 0)  
-    p4 = strassen_opt(mat_add_opt(matA, matA, 0, 0, ns, 0, ns), matB, ns, n0, 0, 0, ns, ns)  
-    p5 = strassen_opt(matA, mat_sub_opt(matB, matB, ns, 0, ns, ns, ns), ns, n0, 0, 0, 0, 0) 
-    p6 = strassen_opt(matA, mat_sub_opt(matB, matB, 0, ns, 0, 0, ns), ns, n0, ns, ns, 0, 0)  
-    p7 = strassen_opt(mat_add_opt(matA, matA, 0, ns, ns, ns, ns), matB, ns, n0, 0, 0, 0, 0)    
+    p1 = strassen_opt(mat_sub_opt(matA, matB, bx, by, dx, dy, ns), mat_add_opt(matB, matB, gx, gy, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
+    p2 = strassen_opt(mat_add_opt(matA, matA, ax,ay, dx, dy, ns), mat_add_opt(matB, matB, ex, ey, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
+    p3 = strassen_opt(mat_sub_opt(matA, matA, ax, ay, cx, cy, ns), mat_add_opt(matB, matB, ex, ey, fx, fy, ns), ns, n0, 0, 0, 0, 0)  
+    print(mat_sub_opt(matA, matA, ax, ay, cx, cy, ns))
+    print( mat_add_opt(matB, matB, ex, ey, fx, fy, ns))
+    p4 = strassen_opt(mat_add_opt(matA, matA, ax, ay, bx, by, ns), matB, ns, n0, 0, 0, hx, hy)  
+    p5 = strassen_opt(matA, mat_sub_opt(matB, matB, fx, fy, hx, hy, ns), ns, n0, ax, ay, 0, 0) 
+    p6 = strassen_opt(matA, mat_sub_opt(matB, matB, gx, gy, ex, ey, ns), ns, n0, dx, dy, 0, 0)  
+    p7 = strassen_opt(mat_add_opt(matA, matA, 0, ns, ns, ns, ns), matB, ns, n0, 0, 0, ex, ey)    
         
     c11 = mat_sub(mat_add(p1, mat_add(p2, p6, ns), ns), p4, ns)
     c12 = mat_add(p4, p5, ns)          
@@ -108,8 +101,6 @@ def strassen_opt(matA, matB, size, n0, xa, ya, xb, yb):
             result[i + ns][j] = c21[i][j]
             result[i][j + ns] = c12[i][j]
             result[i + ns][j + ns] = c22[i][j]
- 
- 
     return result
 
 def strassen(matA, matB, size, n0):
@@ -189,14 +180,35 @@ def main():
     dim = int(sys.argv[2])
     size = get_size(dim)
     file = sys.argv[3]
+    
+    matrices = to_matrices(file, dim, size)
+
+    #print(matrices[0])
+    #print(matrices[1])
+
+
     print(" ")
-    total = 0
+    
+
+
+    
+
+    print(strassen_opt(matrices[0], matrices[1], size, 4, 0, 0, 0, 0))
+    #print(strassen(matrices[0], matrices[1], 7, 4))
+    print('optimizied above, standard beneath')
+    print(standard(matrices[0], matrices[1], size))
+    
+    
+    #total = 0
+    '''
+
     for i in range(flag):
         r = triangles(0.01, 16)
         print(r)
         total += r
     print("Average: ", end = "")
-    print(total / flag)
+    '''
+    #print(total / flag)
 
 
 if __name__ == "__main__":
