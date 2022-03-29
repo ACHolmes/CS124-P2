@@ -279,12 +279,8 @@ def main():
     file = sys.argv[3]
 
     size = get_size(dim)
-    n0 = 256
+    n0 = 64
     matrices = to_matrices(file, dim, size)
-
-    P = create_P(8, 2)
-    for p in P:
-        print_mat(p)
     '''
     
     startstandard = time.perf_counter()
