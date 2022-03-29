@@ -14,6 +14,16 @@ def standard(matA, matB, size):
             out[x][y] = sum
     return out
 
+def standard_opt(matA, matB, size, xa, ya, xb, yb):
+    out = [[0 for x in range(size)] for y in range(size)] 
+    for x in range(size):
+        for y in range(size):
+            sum = 0
+            for i in range(size):
+                sum += matA[x + xa][i + ya] * matB[i + xb][y + yb]
+            out[x][y] = sum
+    return out
+
 def to_matrices(file, dim, size):
     matA = [[0 for x in range(size)] for y in range(size)] 
     matB = [[0 for x in range(size)] for y in range(size)] 
@@ -86,7 +96,7 @@ def print_submat(mat, x, y, size):
 
 def strassen_opt(matA, matB, size, n0, xa, ya, xb, yb):
     if size <= n0:
-        return standard(matA, matB, size)
+        return standard_opt(matA, matB, size, xa, ya, xb, yb)
 
     ns = int(size / 2)
 
@@ -104,10 +114,6 @@ def strassen_opt(matA, matB, size, n0, xa, ya, xb, yb):
     p2 = strassen_opt(mat_add_opt(matA, matA, ax, ay, dx, dy, ns), mat_add_opt(matB, matB, ex, ey, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
     p3 = strassen_opt(mat_sub_opt(matA, matA, ax, ay, cx, cy, ns), mat_add_opt(matB, matB, ex, ey, fx, fy, ns), ns, n0, 0, 0, 0, 0) 
     p4 = strassen_opt(mat_add_opt(matA, matA, ax, ay, bx, by, ns), matB, ns, n0, 0, 0, hx, hy)
-    print_mat(mat_add_opt(matA, matA, ax, ay, bx, by, ns))
-    print_submat(matB, hx, hy, 2)
-    print_mat(p4)
-    print(' ')
     p5 = strassen_opt(matA, mat_sub_opt(matB, matB, fx, fy, hx, hy, ns), ns, n0, ax, ay, 0, 0) 
     p6 = strassen_opt(matA, mat_sub_opt(matB, matB, gx, gy, ex, ey, ns), ns, n0, dx, dy, 0, 0)  
     p7 = strassen_opt(mat_add_opt(matA, matA, cx, cy, dx, dy, ns), matB, ns, n0, 0, 0, ex, ey)    
@@ -283,7 +289,7 @@ def main():
     file = sys.argv[3]
 
     size = get_size(dim)
-    n0 = 2
+    n0 = 4
     matrices = to_matrices(file, dim, size)
     '''
     
