@@ -54,6 +54,20 @@ def mat_sub_opt(a, b, xa, ya, xb, yb, size):
     out = [[0 for p in range(size)] for q in range(size)]
     for i in range(0, size):
         for j in range(0, size):
+            '''
+
+            print(size)
+            print_submat(a, xa, ya, size)
+            print('test')
+            print_mat(a)
+            print_mat(b)
+            print(xb)
+            print_submat(b, xb, yb, size)
+            print(i + xb)
+            print(j + yb)
+            print(j)
+            print(b)
+            '''
             out[i][j] = a[xa + i][ya + j] - b[i + xb][j + yb]
     return out
 
@@ -85,14 +99,14 @@ def strassen_opt(matA, matB, size, n0, xa, ya, xb, yb):
     ey = fx = yb
     fy = hx = xb + ns
     gx = hy = yb + ns
-
-    p1 = strassen_opt(mat_sub_opt(matA, matB, bx, by, dx, dy, ns), mat_add_opt(matB, matB, gx, gy, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
-    p2 = strassen_opt(mat_add_opt(matA, matA, ax,ay, dx, dy, ns), mat_add_opt(matB, matB, ex, ey, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
-    p3 = strassen_opt(mat_sub_opt(matA, matA, ax, ay, cx, cy, ns), mat_add_opt(matB, matB, ex, ey, fx, fy, ns), ns, n0, 0, 0, 0, 0)  
+    # Problem hits in this p1 after running p6 on big matrix
+    p1 = strassen_opt(mat_sub_opt(matA, matA, bx, by, dx, dy, ns), mat_add_opt(matB, matB, gx, gy, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
+    p2 = strassen_opt(mat_add_opt(matA, matA, ax, ay, dx, dy, ns), mat_add_opt(matB, matB, ex, ey, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
+    p3 = strassen_opt(mat_sub_opt(matA, matA, ax, ay, cx, cy, ns), mat_add_opt(matB, matB, ex, ey, fx, fy, ns), ns, n0, 0, 0, 0, 0) 
     p4 = strassen_opt(mat_add_opt(matA, matA, ax, ay, bx, by, ns), matB, ns, n0, 0, 0, hx, hy)
     p5 = strassen_opt(matA, mat_sub_opt(matB, matB, fx, fy, hx, hy, ns), ns, n0, ax, ay, 0, 0) 
     p6 = strassen_opt(matA, mat_sub_opt(matB, matB, gx, gy, ex, ey, ns), ns, n0, dx, dy, 0, 0)  
-    p7 = strassen_opt(mat_add_opt(matA, matA, 0, ns, ns, ns, ns), matB, ns, n0, 0, 0, ex, ey)    
+    p7 = strassen_opt(mat_add_opt(matA, matA, cx, cy, dx, dy, ns), matB, ns, n0, 0, 0, ex, ey)    
         
     c11 = mat_sub(mat_add(p1, mat_add(p2, p6, ns), ns), p4, ns)
     c12 = mat_add(p4, p5, ns)          
@@ -186,7 +200,9 @@ def main():
         return 1
     flag = int(sys.argv[1])
     dim = int(sys.argv[2])
+    n0 = 2
     size = get_size(dim)
+    print(size)
     file = sys.argv[3]
     
     matrices = to_matrices(file, dim, size)
@@ -194,7 +210,8 @@ def main():
     #print(matrices[0])
     #print(matrices[1])
     
-    result = strassen(matrices[0], matrices[1], size, 4)
+    result = strassen_opt(matrices[0], matrices[1], size, n0, 0, 0, 0, 0)
+    print(result)
     final_result(result, dim)
     #print(strassen(matrices[0], matrices[1], 8, 5))
     #print('optimizied above, standard beneath')
