@@ -144,7 +144,7 @@ def strassen(matA, matB, size, n0):
 
     p1 = strassen(mat_sub(b, d, ns), mat_add(g, h, ns), ns, n0) 
     p2 = strassen(mat_add(a, d, ns), mat_add(e, h, ns), ns, n0) 
-    p3 = strassen(mat_sub(a, c, ns),mat_add(e, f, ns), ns, n0)  
+    p3 = strassen(mat_sub(a, c, ns), mat_add(e, f, ns), ns, n0)  
     p4 = strassen(mat_add(a, b, ns), h, ns, n0)  
     p5 = strassen(a, mat_sub(f, h, ns), ns, n0) 
     p6 = strassen(d, mat_sub(g, e, ns), ns, n0)  
@@ -211,6 +211,7 @@ def main():
     #print(matrices[1])
     
     result = strassen_opt(matrices[0], matrices[1], size, n0, 0, 0, 0, 0)
+    #result = strassen(matrices[0], matrices[1], size, 4)
     print(result)
     final_result(result, dim)
     #print(strassen(matrices[0], matrices[1], 8, 5))
