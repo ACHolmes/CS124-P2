@@ -279,7 +279,7 @@ def main():
     file = sys.argv[3]
 
     size = get_size(dim)
-    n0 = 64
+    n0 = 2
     matrices = to_matrices(file, dim, size)
     '''
     
@@ -291,11 +291,13 @@ def main():
 
     startstrassen = time.perf_counter()
     result = strassen(matrices[0], matrices[1], size, n0)
+    print_mat(result)
     endstrassen = time.perf_counter()
     print("Strassen: n0 " + str(n0) + " time: " + str(endstrassen - startstrassen))
 
     startstrassenopt = time.perf_counter()
     result = strassen_opt(matrices[0], matrices[1], size, n0, 0, 0, 0, 0)
+    print_mat(result)
     endstrassenopt = time.perf_counter()
     print("Strassenopt: n0 " + str(n0) + " time: " + str(endstrassenopt - startstrassenopt))
 
