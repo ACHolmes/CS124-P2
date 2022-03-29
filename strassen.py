@@ -2,6 +2,7 @@ from sqlite3 import NotSupportedError
 import numpy as np
 import sys
 import random
+import time
 
 def standard(matA, matB, size):
     out = [[0 for x in range(size)] for y in range(size)] 
@@ -12,7 +13,6 @@ def standard(matA, matB, size):
                 sum += matA[x][i] * matB[i][y]
             out[x][y] = sum
     return out
-
 
 def to_matrices(file, dim, size):
     matA = [[0 for x in range(size)] for y in range(size)] 
@@ -166,8 +166,75 @@ def strassen(matA, matB, size, n0):
  
     return result
 
-    # want to only get the non-zero column/rows out of the above
-    # and also the end result should be only printing the numbers on the main diagonal.
+def create_P(size, n0):
+    size_copy = size
+    counter = 0
+    while size_copy > n0:
+        counter += 1
+        size_copy = int(size_copy / 2)
+    out = []
+    for i in range(counter):
+        createSize = int(size / (2 ** (i + 1)))
+        for j in range(7):
+            out.append([[0 for x in range(createSize)] for y in range(createSize)])
+    return out 
+
+def create_C(size, n0):
+    size_copy = size
+    counter = 0
+    while size_copy > n0:
+        counter += 1
+        size_copy = int(size_copy / 2)
+    out = []
+    for i in range(counter):
+        createSize = int(size / (2 ** i + 1))
+        for j in range(7):
+            out.append([[0 for x in range(createSize)] for y in range(createSize)])
+    return out 
+
+def strassen_p(matA, matB, size, n0, P, C):
+
+    if size <= n0:
+        return standard(matA, matB, size)
+
+    ns = int(size / 2)
+    helper = matA[0: ns]
+    a = [row[0: ns] for row in helper]
+    b = [row[ns: size] for row in helper]
+    helper = matA[ns: size]
+    c = [row[0: ns] for row in helper]
+    d = [row[ns: size] for row in helper]
+
+    helper = matB[0: ns]
+    e = [row[0: ns] for row in helper]
+    f = [row[ns: size] for row in helper]
+    helper = matB[ns: size]
+    g = [row[0: ns] for row in helper]
+    h = [row[ns: size] for row in helper]
+
+    p1 = strassen(mat_sub(b, d, ns), mat_add(g, h, ns), ns, n0) 
+    p2 = strassen(mat_add(a, d, ns), mat_add(e, h, ns), ns, n0) 
+    p3 = strassen(mat_sub(a, c, ns), mat_add(e, f, ns), ns, n0)  
+    p4 = strassen(mat_add(a, b, ns), h, ns, n0)  
+    p5 = strassen(a, mat_sub(f, h, ns), ns, n0) 
+    p6 = strassen(d, mat_sub(g, e, ns), ns, n0)  
+    p7 = strassen(mat_add(c, d, ns), e, ns, n0)    
+        
+    c11 = mat_sub(mat_add(p1, mat_add(p2, p6, ns), ns), p4, ns)
+    c12 = mat_add(p4, p5, ns)          
+    c21 = mat_add(p6, p7, ns)           
+    c22 = mat_sub(mat_sub(mat_add(p2, p5, ns), p7, ns), p3, ns)
+
+    result = [[0 for x in range(size)] for y in range(size)]
+    for i in range(0, ns):
+        for j in range(0, ns):
+            result[i][j] = c11[i][j]
+            result[i + ns][j] = c21[i][j]
+            result[i][j + ns] = c12[i][j]
+            result[i + ns][j + ns] = c22[i][j]
+ 
+ 
+    return result
 
 def print_mat(matA):
     for row in matA:
@@ -193,6 +260,15 @@ def final_result(mat, dim):
     for i in range(dim):
         print(mat[i][i])
 
+def run_triangles(flag):
+    total = 0
+    for i in range(flag):
+        r = triangles(0.01, 16)
+        print(r)
+        total += r
+    print("Average: ", end = "")
+    print(total / flag)
+
 
 def main():
     if (len(sys.argv) != 4):
@@ -200,33 +276,36 @@ def main():
         return 1
     flag = int(sys.argv[1])
     dim = int(sys.argv[2])
-    n0 = 2
-    size = get_size(dim)
-    print(size)
     file = sys.argv[3]
-    
+
+    size = get_size(dim)
+    n0 = 256
     matrices = to_matrices(file, dim, size)
 
-    #print(matrices[0])
-    #print(matrices[1])
+    P = create_P(8, 2)
+    for p in P:
+        print_mat(p)
+    '''
     
-    result = strassen_opt(matrices[0], matrices[1], size, n0, 0, 0, 0, 0)
-    #result = strassen(matrices[0], matrices[1], size, 4)
-    print(result)
-    final_result(result, dim)
-    #print(strassen(matrices[0], matrices[1], 8, 5))
-    #print('optimizied above, standard beneath')
-    #print(standard(matrices[0], matrices[1], size))
-    #total = 0
+    startstandard = time.perf_counter()
+    a = standard(matrices[0], matrices[1], size)
+    endstandard = time.perf_counter()
+    print("Standard: n0 " + str(n0) + " time: " + str(endstandard - startstandard))
     '''
 
-    for i in range(flag):
-        r = triangles(0.01, 16)
-        print(r)
-        total += r
-    print("Average: ", end = "")
-    '''
-    #print(total / flag)
+    startstrassen = time.perf_counter()
+    result = strassen(matrices[0], matrices[1], size, n0)
+    endstrassen = time.perf_counter()
+    print("Strassen: n0 " + str(n0) + " time: " + str(endstrassen - startstrassen))
+
+    startstrassenopt = time.perf_counter()
+    result = strassen_opt(matrices[0], matrices[1], size, n0, 0, 0, 0, 0)
+    endstrassenopt = time.perf_counter()
+    print("Strassenopt: n0 " + str(n0) + " time: " + str(endstrassenopt - startstrassenopt))
+
+    #print(result)
+    #final_result(result, dim)
+
 
 
 if __name__ == "__main__":
