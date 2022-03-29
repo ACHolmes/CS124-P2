@@ -64,20 +64,6 @@ def mat_sub_opt(a, b, xa, ya, xb, yb, size):
     out = [[0 for p in range(size)] for q in range(size)]
     for i in range(0, size):
         for j in range(0, size):
-            '''
-
-            print(size)
-            print_submat(a, xa, ya, size)
-            print('test')
-            print_mat(a)
-            print_mat(b)
-            print(xb)
-            print_submat(b, xb, yb, size)
-            print(i + xb)
-            print(j + yb)
-            print(j)
-            print(b)
-            '''
             out[i][j] = a[xa + i][ya + j] - b[i + xb][j + yb]
     return out
 
@@ -109,7 +95,7 @@ def strassen_opt(matA, matB, size, n0, xa, ya, xb, yb):
     ey = fx = yb
     fy = hx = xb + ns
     gx = hy = yb + ns
-    # Problem hits in this p1 after running p6 on big matrix
+
     p1 = strassen_opt(mat_sub_opt(matA, matA, bx, by, dx, dy, ns), mat_add_opt(matB, matB, gx, gy, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
     p2 = strassen_opt(mat_add_opt(matA, matA, ax, ay, dx, dy, ns), mat_add_opt(matB, matB, ex, ey, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
     p3 = strassen_opt(mat_sub_opt(matA, matA, ax, ay, cx, cy, ns), mat_add_opt(matB, matB, ex, ey, fx, fy, ns), ns, n0, 0, 0, 0, 0) 
@@ -202,33 +188,29 @@ def create_C(size, n0):
             out.append([[0 for x in range(createSize)] for y in range(createSize)])
     return out 
 
-def strassen_p(matA, matB, size, n0, P, C):
-
+def strassen_fin(matA, matB, size, n0, xa, ya, xb, yb, P, C):
     if size <= n0:
-        return standard(matA, matB, size)
+        return standard_opt(matA, matB, size, xa, ya, xb, yb)
 
     ns = int(size / 2)
-    helper = matA[0: ns]
-    a = [row[0: ns] for row in helper]
-    b = [row[ns: size] for row in helper]
-    helper = matA[ns: size]
-    c = [row[0: ns] for row in helper]
-    d = [row[ns: size] for row in helper]
 
-    helper = matB[0: ns]
-    e = [row[0: ns] for row in helper]
-    f = [row[ns: size] for row in helper]
-    helper = matB[ns: size]
-    g = [row[0: ns] for row in helper]
-    h = [row[ns: size] for row in helper]
+    ax = cy = xa
+    ay = bx = ya
+    by = dx = xa + ns
+    cx = dy = ya + ns
 
-    p1 = strassen(mat_sub(b, d, ns), mat_add(g, h, ns), ns, n0) 
-    p2 = strassen(mat_add(a, d, ns), mat_add(e, h, ns), ns, n0) 
-    p3 = strassen(mat_sub(a, c, ns), mat_add(e, f, ns), ns, n0)  
-    p4 = strassen(mat_add(a, b, ns), h, ns, n0)  
-    p5 = strassen(a, mat_sub(f, h, ns), ns, n0) 
-    p6 = strassen(d, mat_sub(g, e, ns), ns, n0)  
-    p7 = strassen(mat_add(c, d, ns), e, ns, n0)    
+    ex = gy = xb
+    ey = fx = yb
+    fy = hx = xb + ns
+    gx = hy = yb + ns
+
+    p1 = strassen_opt(mat_sub_opt(matA, matA, bx, by, dx, dy, ns), mat_add_opt(matB, matB, gx, gy, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
+    p2 = strassen_opt(mat_add_opt(matA, matA, ax, ay, dx, dy, ns), mat_add_opt(matB, matB, ex, ey, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
+    p3 = strassen_opt(mat_sub_opt(matA, matA, ax, ay, cx, cy, ns), mat_add_opt(matB, matB, ex, ey, fx, fy, ns), ns, n0, 0, 0, 0, 0) 
+    p4 = strassen_opt(mat_add_opt(matA, matA, ax, ay, bx, by, ns), matB, ns, n0, 0, 0, hx, hy)
+    p5 = strassen_opt(matA, mat_sub_opt(matB, matB, fx, fy, hx, hy, ns), ns, n0, ax, ay, 0, 0) 
+    p6 = strassen_opt(matA, mat_sub_opt(matB, matB, gx, gy, ex, ey, ns), ns, n0, dx, dy, 0, 0)  
+    p7 = strassen_opt(mat_add_opt(matA, matA, cx, cy, dx, dy, ns), matB, ns, n0, 0, 0, ex, ey)    
         
     c11 = mat_sub(mat_add(p1, mat_add(p2, p6, ns), ns), p4, ns)
     c12 = mat_add(p4, p5, ns)          
@@ -242,8 +224,6 @@ def strassen_p(matA, matB, size, n0, P, C):
             result[i + ns][j] = c21[i][j]
             result[i][j + ns] = c12[i][j]
             result[i + ns][j + ns] = c22[i][j]
- 
- 
     return result
 
 def print_mat(matA):
