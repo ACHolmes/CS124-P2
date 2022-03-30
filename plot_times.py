@@ -41,10 +41,7 @@ with open(opener) as f:
             t_strassenfin.append(el)
 
     n0s_clean = list(dict.fromkeys(n0s))
-    # print(n0s_clean)
-    # print(t_standard)
-    # print(t_strassenfin)
-
+    
     plt.scatter(n0s_clean, t_standard, color="Red", label="Standard")
     plt.scatter(n0s_clean, t_strassen, color="Blue", label="Strassen")
     plt.scatter(n0s_clean, t_strassenopt, color="Pink", label="Strassenopt")

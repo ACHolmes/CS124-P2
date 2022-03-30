@@ -1,4 +1,6 @@
 import random
+import os.path
+import sys
 
 def filemaker(matrix_size):
     inp = []
@@ -8,10 +10,19 @@ def filemaker(matrix_size):
     return inp
 
 def to_txt(lst, filename):
-    txt_file = open(filename, "w")
+    file = os.path.join("testfiles/", filename)
+    print(file)
+    txt_file = open(file, "w")
     for el in lst:
         txt_file.write(str(el) + "\n")
     txt_file.close()
 
+def main():
+    if (len(sys.argv) != 2):
+        print("Usage: python3 rand_input_gen.py size")
+        return 1
+    size = int(sys.argv[1])
+    to_txt(filemaker(size), "test" + str(size) + ".txt")
 
-to_txt(filemaker(513), "tester3.txt")
+if __name__ == "__main__":
+    main()
