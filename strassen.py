@@ -271,34 +271,31 @@ def main():
     size = get_size(dim)
     n0 = 64
     matrices = to_matrices(file, dim, size)
-    '''
+    n0s = [16, 32, 64, 128]
+    for n0 in n0s:
+        startstandard = time.perf_counter()
+        a = standard(matrices[0], matrices[1], size)
+        endstandard = time.perf_counter()
+        print("Standard: n0 " + str(n0) + " time: " + str(endstandard - startstandard))
+
+        startstrassen = time.perf_counter()
+        result = strassen(matrices[0], matrices[1], size, n0)
+        #print_mat(result)
+        endstrassen = time.perf_counter()
+        print("Strassen: n0 " + str(n0) + " time: " + str(endstrassen - startstrassen))
+
+        startstrassenopt = time.perf_counter()
+        result = strassen_opt(matrices[0], matrices[1], size, n0, 0, 0, 0, 0)
+        #print_mat(result)
+        endstrassenopt = time.perf_counter()
+        print("Strassenopt: n0 " + str(n0) + " time: " + str(endstrassenopt - startstrassenopt))
     
-    startstandard = time.perf_counter()
-    a = standard(matrices[0], matrices[1], size)
-    endstandard = time.perf_counter()
-    print("Standard: n0 " + str(n0) + " time: " + str(endstandard - startstandard))
-
-
-    startstrassen = time.perf_counter()
-    result = strassen(matrices[0], matrices[1], size, n0)
-    #print_mat(result)
-    endstrassen = time.perf_counter()
-    print("Strassen: n0 " + str(n0) + " time: " + str(endstrassen - startstrassen))
-
-    startstrassenopt = time.perf_counter()
-    result = strassen_opt(matrices[0], matrices[1], size, n0, 0, 0, 0, 0)
-    #print_mat(result)
-    endstrassenopt = time.perf_counter()
-    print("Strassenopt: n0 " + str(n0) + " time: " + str(endstrassenopt - startstrassenopt))
-    '''
-    startstrassenfin = time.perf_counter()
-    P = create_P(size, n0)
-    C = create_C(size, n0)
-    result = strassen_fin(matrices[0], matrices[1], size, n0, 0, 0, 0, 0, P, C, 0)
-    #final_result(result, dim)
-    #print_mat(result)
-    endstrassenfin = time.perf_counter()
-    print("Strassenfin: n0 " + str(n0) + " time: " + str(endstrassenfin - startstrassenfin))
+        startstrassenfin = time.perf_counter()
+        P = create_P(size, n0)
+        C = create_C(size, n0)
+        result = strassen_fin(matrices[0], matrices[1], size, n0, 0, 0, 0, 0, P, C, 0)
+        endstrassenfin = time.perf_counter()
+        print("Strassenfin: n0 " + str(n0) + " time: " + str(endstrassenfin - startstrassenfin))
 
     #print(result)
     #final_result(result, dim)
