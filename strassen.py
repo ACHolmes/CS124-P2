@@ -288,15 +288,19 @@ def main():
     flag = int(sys.argv[1])
     dim = int(sys.argv[2])
     inputfile = sys.argv[3]
-    file = os.path.join("testfiles/", inputfile)
-
     size = get_size(dim)
     n0 = 64
-    matrices = to_matrices(file, dim, size)
+
+    matrices = to_matrices(inputfile, dim, size)
+    P = create_P(size, n0)
+    C = create_C(size, n0)
+    result = strassen_fin(matrices[0], matrices[1], size, n0, 0, 0, 0, 0, P, C, 0)
+    final_result(result, dim)
+
+'''
     n0s = [16, 32, 64, 128]
-
-
     now = datetime.now()
+    file = os.path.join("testfiles/", inputfile)
     current_time = now.strftime("%H%M")
     filename = "data" + current_time + ".txt"
     finalfile = os.path.join(save_path, filename)
@@ -316,8 +320,8 @@ def main():
             test(strassen_fin, matrices[0], matrices[1], size, n0, txt_file)
         print(' ')
     txt_file.close()
-    #print(result)
-    #final_result(result, dim)
+'''
+
 
 if __name__ == "__main__":
     main()
