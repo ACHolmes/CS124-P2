@@ -4,7 +4,9 @@ import sys
 import random
 import time
 from datetime import datetime
+import os.path
 
+save_path = 'datalogs'
 
 def standard(matA, matB, size):
     out = [[0 for x in range(size)] for y in range(size)] 
@@ -279,7 +281,9 @@ def main():
     now = datetime.now()
     current_time = now.strftime("%H%M")
     filename = "data" + current_time + ".txt"
-    txt_file = open(filename, "w")
+    finalfile = os.path.join(save_path, filename)
+    print(finalfile)
+    txt_file = open(finalfile, "w")
 
     
 
