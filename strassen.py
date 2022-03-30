@@ -282,7 +282,6 @@ def main():
     current_time = now.strftime("%H%M")
     filename = "data" + current_time + ".txt"
     finalfile = os.path.join(save_path, filename)
-    print(finalfile)
     txt_file = open(finalfile, "w")
 
     
