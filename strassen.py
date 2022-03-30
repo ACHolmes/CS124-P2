@@ -264,13 +264,31 @@ def run_triangles(flag):
     print("Average: ", end = "")
     print(total / flag)
 
+def test(alg, matA, matB, size, n0, file):
+    start = time.perf_counter()
+    if alg.__name__ == "standard":
+        result = standard(matA, matB, size)
+    if alg.__name__ == "strassen":
+        result = strassen(matA, matB, size, n0)
+    if alg.__name__ == "strassen_opt":
+        result = strassen_opt(matA, matB, size, n0, 0, 0, 0, 0)
+    if alg.__name__ == "strassen_fin":
+        P = create_P(size, n0)
+        C = create_C(size, n0)
+        result = strassen_fin(matA, matB, size, n0, 0, 0, 0, 0, P, C, 0)
+    end = time.perf_counter()
+    text = str(alg.__name__).upper() +". Size: " + str(size) + ", n0:  " + str(n0) + ", time: " + str(end - start)
+    file.write(text + "\n")
+    print(text)
+
 def main():
     if (len(sys.argv) != 4):
         print("Usage: python3 strassen.py flag dimension inputfile")
         return 1
     flag = int(sys.argv[1])
     dim = int(sys.argv[2])
-    file = sys.argv[3]
+    inputfile = sys.argv[3]
+    file = os.path.join("testfiles/", inputfile)
 
     size = get_size(dim)
     n0 = 64
@@ -284,46 +302,15 @@ def main():
     finalfile = os.path.join(save_path, filename)
     txt_file = open(finalfile, "w")
 
-    
-
     for n0 in n0s:
-        startstandard = time.perf_counter()
-        a = standard(matrices[0], matrices[1], size)
-        endstandard = time.perf_counter()
-        text = "STANDARD.    Size: " + str(size) + ", n0:  " + str(n0) + ", time: " + str(endstandard - startstandard)
-        print(text)
-        txt_file.write(text + "\n")
-
-        startstrassen = time.perf_counter()
-        result = strassen(matrices[0], matrices[1], size, n0)
-        endstrassen = time.perf_counter()
-        text = "STRASSEN.    Size: " + str(size) + ", n0:  " + str(n0) + ", time: " + str(endstrassen - startstrassen)
-        print(text)
-        txt_file.write(text + "\n")
-
-        startstrassenopt = time.perf_counter()
-        result = strassen_opt(matrices[0], matrices[1], size, n0, 0, 0, 0, 0)
-        endstrassenopt = time.perf_counter()
-        text = "STRASSENOPT. Size: " + str(size) + ", n0:  " + str(n0) + ", time: " + str(endstrassenopt - startstrassenopt)
-        print(text)
-        txt_file.write(text + "\n")
-    
-        startstrassenfin = time.perf_counter()
-        P = create_P(size, n0)
-        C = create_C(size, n0)
-        result = strassen_fin(matrices[0], matrices[1], size, n0, 0, 0, 0, 0, P, C, 0)
-        endstrassenfin = time.perf_counter()
-        text = "STRASSENFIN. Size: " + str(size) + ", n0:  " + str(n0) + ", time: " + str(endstrassenfin - startstrassenfin)
-        print(text)
-        print('')
-        txt_file.write(text + "\n")
-        txt_file.write("\n")
-
+        test(standard, matrices[0], matrices[1], size, n0, txt_file)
+        test(strassen, matrices[0], matrices[1], size, n0, txt_file)
+        test(strassen_opt, matrices[0], matrices[1], size, n0, txt_file)
+        test(strassen_fin, matrices[0], matrices[1], size, n0, txt_file)
+        print(' ')
     txt_file.close()
     #print(result)
     #final_result(result, dim)
-
-
 
 if __name__ == "__main__":
     main()

@@ -14,4 +14,4 @@ def to_txt(lst, filename):
     txt_file.close()
 
 
-to_txt(filemaker(2048), "tester2.txt")
+to_txt(filemaker(513), "tester3.txt")
