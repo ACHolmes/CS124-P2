@@ -47,7 +47,7 @@ with open(opener) as f:
 
     plt.scatter(n0s_clean, t_standard, color="Red", label="Standard")
     plt.scatter(n0s_clean, t_strassen, color="Blue", label="Strassen")
-    plt.scatter(n0s_clean, t_strassenopt, color="Green", label="Strassenopt")
+    plt.scatter(n0s_clean, t_strassenopt, color="Pink", label="Strassenopt")
     plt.scatter(n0s_clean, t_strassenfin, color="Black", label="Strassenfin")
     plt.legend(loc="upper right")
     plt.xlabel('crossover matrix size')
