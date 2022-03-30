@@ -3,6 +3,8 @@ import numpy as np
 import sys
 import random
 import time
+from datetime import datetime
+
 
 def standard(matA, matB, size):
     out = [[0 for x in range(size)] for y in range(size)] 
@@ -273,7 +275,11 @@ def main():
     matrices = to_matrices(file, dim, size)
     n0s = [16, 32, 64, 128]
 
-    txt_file = open("data.txt", "w")
+
+    now = datetime.now()
+    current_time = now.strftime("%H%M")
+    filename = "data" + current_time + ".txt"
+    txt_file = open(filename, "w")
 
     
 
