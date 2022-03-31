@@ -41,14 +41,14 @@ with open(opener) as f:
             t_strassenfin.append(el)
 
     n0s_clean = list(dict.fromkeys(n0s))
-    
+
     plt.scatter(n0s_clean, t_standard, color="Red", label="Standard")
     plt.scatter(n0s_clean, t_strassen, color="Blue", label="Strassen")
     plt.scatter(n0s_clean, t_strassenopt, color="Pink", label="Strassenopt")
     plt.scatter(n0s_clean, t_strassenfin, color="Black", label="Strassenfin")
     plt.legend(loc="upper right")
-    plt.xlabel('crossover matrix size')
-    plt.ylabel('time the algorithm took to run')
+    plt.xlabel('Crossover matrix size (n0)')
+    plt.ylabel('Algorithm run time (s)')
     plt.savefig('plottimes.png')
     plt.show()
     

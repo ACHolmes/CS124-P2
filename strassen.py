@@ -1,5 +1,3 @@
-from sqlite3 import NotSupportedError
-import numpy as np
 import sys
 import random
 import time
@@ -78,6 +76,10 @@ def mat_add_opt(a, b, xa, ya, xb, yb, size):
             out[i][j] = a[xa + i][ya + j] + b[xb + i][yb + j]
     return out
 
+
+
+
+
 def print_submat(mat, x, y, size):
     for i in range(size):
         for j in range(size):
@@ -100,9 +102,12 @@ def strassen_opt(matA, matB, size, n0, xa, ya, xb, yb):
     fy = hx = xb + ns
     gx = hy = yb + ns
 
-    p1 = strassen_opt(mat_sub_opt(matA, matA, bx, by, dx, dy, ns), mat_add_opt(matB, matB, gx, gy, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
-    p2 = strassen_opt(mat_add_opt(matA, matA, ax, ay, dx, dy, ns), mat_add_opt(matB, matB, ex, ey, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
-    p3 = strassen_opt(mat_sub_opt(matA, matA, ax, ay, cx, cy, ns), mat_add_opt(matB, matB, ex, ey, fx, fy, ns), ns, n0, 0, 0, 0, 0) 
+    p1 = strassen_opt(mat_sub_opt(matA, matA, bx, by, dx, dy, ns), 
+                      mat_add_opt(matB, matB, gx, gy, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
+    p2 = strassen_opt(mat_add_opt(matA, matA, ax, ay, dx, dy, ns), 
+                      mat_add_opt(matB, matB, ex, ey, hx, hy, ns), ns, n0, 0, 0, 0, 0) 
+    p3 = strassen_opt(mat_sub_opt(matA, matA, ax, ay, cx, cy, ns), 
+                      mat_add_opt(matB, matB, ex, ey, fx, fy, ns), ns, n0, 0, 0, 0, 0) 
     p4 = strassen_opt(mat_add_opt(matA, matA, ax, ay, bx, by, ns), matB, ns, n0, 0, 0, hx, hy)
     p5 = strassen_opt(matA, mat_sub_opt(matB, matB, fx, fy, hx, hy, ns), ns, n0, ax, ay, 0, 0) 
     p6 = strassen_opt(matA, mat_sub_opt(matB, matB, gx, gy, ex, ey, ns), ns, n0, dx, dy, 0, 0)  
@@ -175,7 +180,7 @@ def create_P(size, n0):
     out = []
     for i in range(counter):
         createSize = int(size / (2 ** (i + 1)))
-        for j in range(7):
+        for j in range(8):
             out.append([[0 for x in range(createSize)] for y in range(createSize)])
     return out 
 
@@ -188,13 +193,37 @@ def create_C(size, n0):
     out = []
     for i in range(counter):
         createSize = int(size / (2 ** i + 1))
-        for j in range(7):
+        for j in range(4):
             out.append([[0 for x in range(createSize)] for y in range(createSize)])
     return out 
 
-def strassen_fin(matA, matB, size, n0, xa, ya, xb, yb, P, C, count):
+def create_R(size):
+    out = [[0 for x in range(size)] for y in range(size)]
+    return out
+
+
+def mat_sub_fin(a, b, xa, ya, xb, yb, size, S, index):
+    for i in range(0, size):
+        for j in range(0, size):
+            S[index][i][j] = a[xa + i][ya + j] - b[i + xb][j + yb]
+
+def mat_add_fin(a, b, xa, ya, xb, yb, size, S, index):
+    for i in range(0, size):
+        for j in range(0, size):
+            S[index][i][j] = a[xa + i][ya + j] + b[xb + i][yb + j]
+
+
+def standard_fin(matA, matB, size, xa, ya, xb, yb, S):
+    for x in range(size):
+        for y in range(size):
+            sum = 0
+            for i in range(size):
+                sum += matA[x + xa][i + ya] * matB[i + xb][y + yb]
+            S[x][y] = sum
+
+def strassen_fin(matA, matB, size, n0, xa, ya, xb, yb, P, C, count, S):
     if size <= n0:
-        return standard_opt(matA, matB, size, xa, ya, xb, yb)
+        return standard_fin(matA, matB, size, xa, ya, xb, yb, S)
 
     ns = int(size / 2)
 
@@ -207,29 +236,59 @@ def strassen_fin(matA, matB, size, n0, xa, ya, xb, yb, P, C, count):
     ey = fx = yb
     fy = hx = xb + ns
     gx = hy = yb + ns
-    newcount = count + 1
-    index = count * 7
-    P[index] = strassen_fin(mat_sub_opt(matA, matA, bx, by, dx, dy, ns), mat_add_opt(matB, matB, gx, gy, hx, hy, ns), ns, n0, 0, 0, 0, 0, P, C, newcount) 
-    P[index + 1] = strassen_fin(mat_add_opt(matA, matA, ax, ay, dx, dy, ns), mat_add_opt(matB, matB, ex, ey, hx, hy, ns), ns, n0, 0, 0, 0, 0, P, C, newcount) 
-    P[index + 2] = strassen_fin(mat_sub_opt(matA, matA, ax, ay, cx, cy, ns), mat_add_opt(matB, matB, ex, ey, fx, fy, ns), ns, n0, 0, 0, 0, 0, P, C, newcount) 
-    P[index + 3] = strassen_fin(mat_add_opt(matA, matA, ax, ay, bx, by, ns), matB, ns, n0, 0, 0, hx, hy, P, C, newcount)
-    P[index + 4] = strassen_fin(matA, mat_sub_opt(matB, matB, fx, fy, hx, hy, ns), ns, n0, ax, ay, 0, 0, P, C, newcount) 
-    P[index + 5] = strassen_fin(matA, mat_sub_opt(matB, matB, gx, gy, ex, ey, ns), ns, n0, dx, dy, 0, 0, P, C, newcount)  
-    P[index + 6] = strassen_fin(mat_add_opt(matA, matA, cx, cy, dx, dy, ns), matB, ns, n0, 0, 0, ex, ey, P, C, newcount)    
-        
-    C[index] = mat_sub(mat_add(P[index], mat_add(P[index + 1], P[index + 5], ns), ns), P[index + 3], ns)
-    C[index + 1] = mat_add(P[index + 3], P[index + 4], ns)          
-    C[index + 2] = mat_add(P[index + 5], P[index + 6], ns)           
-    C[index + 3] = mat_sub(mat_sub(mat_add(P[index + 1], P[index + 4], ns), P[index + 6], ns), P[index + 2], ns)
 
-    result = [[0 for x in range(size)] for y in range(size)]
+    newcount = count + 1
+    index = count * 8
+    cindex = count * 4
+
+    #p1
+    mat_sub_fin(matA, matA, bx, by, dx, dy, ns, P, index + 6)
+    mat_add_fin(matB, matB, gx, gy, hx, hy, ns, P, index + 7)
+    strassen_fin(P[index + 6], P[index + 7], ns, n0, 0, 0, 0, 0, P, C, newcount, P[index])
+    #p2
+    mat_add_fin(matA, matA, ax, ay, dx, dy, ns, P, index + 6)
+    mat_add_fin(matB, matB, ex, ey, hx, hy, ns, P, index + 7)
+    strassen_fin(P[index + 6], P[index + 7], ns, n0, 0, 0, 0, 0, P, C, newcount, P[index + 1])
+    #p3
+    mat_sub_fin(matA, matA, ax, ay, cx, cy, ns, P, index + 6)
+    mat_add_fin(matB, matB, ex, ey, fx, fy, ns, P, index + 7)
+    strassen_fin(P[index + 6], P[index + 7], ns, n0, 0, 0, 0, 0, P, C, newcount, P[index + 2])
+    #p4
+    mat_add_fin(matA, matA, ax, ay, bx, by, ns, P, index + 7)
+    strassen_fin(P[index + 7], matB, ns, n0, 0, 0, hx, hy, P, C, newcount, P[index + 3])
+    #p5
+    mat_sub_fin(matB, matB, fx, fy, hx, hy, ns, P, index + 7)
+    strassen_fin(matA, P[index + 7], ns, n0, ax, ay, 0, 0, P, C, newcount, P[index + 4])
+    #p6
+    mat_sub_fin(matB, matB, gx, gy, ex, ey, ns, P, index + 7)
+    strassen_fin(matA, P[index + 7], ns, n0, dx, dy, 0, 0, P, C, newcount, P[index + 5])
+    #p7
+    mat_add_fin(matA, matA, cx, cy, dx, dy, ns, P, index + 7)
+    strassen_fin(P[index + 7], matB, ns, n0, 0, 0, ex, ey, P, C, newcount, P[index + 6])
+    
+    # c11 work
+    mat_add_fin(P[index + 1], P[index + 5], 0, 0, 0, 0, ns, C, cindex)
+    mat_add_fin(P[index], C[cindex], 0, 0, 0, 0, ns, C, cindex)
+    mat_sub_fin(C[cindex], P[index + 3], 0, 0, 0 ,0, ns, C, cindex)
+
+    #c12 work
+    mat_add_fin(P[index + 3], P[index + 4], 0, 0, 0, 0, ns, C, cindex + 1)
+             
+    #c21 work
+    mat_add_fin(P[index + 5], P[index + 6], 0, 0, 0, 0, ns, C, cindex + 2)    
+
+    #c22 work
+    mat_add_fin(P[index + 1], P[index + 4], 0, 0, 0, 0, ns, C, cindex + 3)
+    mat_sub_fin(C[cindex + 3], P[index + 6], 0, 0, 0, 0, ns, C, cindex + 3)
+    mat_sub_fin(C[cindex + 3], P[index + 2], 0, 0, 0, 0, ns, C, cindex + 3)
+
     for i in range(0, ns):
         for j in range(0, ns):
-            result[i][j] = C[index][i][j]
-            result[i + ns][j] = C[index + 1][i][j]
-            result[i][j + ns] = C[index + 2][i][j]
-            result[i + ns][j + ns] = C[index + 3][i][j]
-    return result
+            S[i][j] = C[cindex][i][j]
+            S[i + ns][j] = C[cindex + 1][i][j]
+            S[i][j + ns] = C[cindex + 2][i][j]
+            S[i + ns][j + ns] = C[cindex + 3][i][j]
+    return S
 
 def print_mat(matA):
     for row in matA:
@@ -258,7 +317,7 @@ def final_result(mat, dim):
 def run_triangles(flag):
     total = 0
     for i in range(flag):
-        r = triangles(0.01, 16)
+        r = triangles(1.1, 32)
         print(r)
         total += r
     print("Average: ", end = "")
@@ -275,7 +334,8 @@ def test(alg, matA, matB, size, n0, file):
     if alg.__name__ == "strassen_fin":
         P = create_P(size, n0)
         C = create_C(size, n0)
-        result = strassen_fin(matA, matB, size, n0, 0, 0, 0, 0, P, C, 0)
+        R = create_R(size)
+        result = strassen_fin(matA, matB, size, n0, 0, 0, 0, 0, P, C, 0, R)
     end = time.perf_counter()
     text = str(alg.__name__).upper() +". Size: " + str(size) + ", n0:  " + str(n0) + ", time: " + str(end - start)
     file.write(text + "\n")
@@ -285,42 +345,21 @@ def main():
     if (len(sys.argv) != 4):
         print("Usage: python3 strassen.py flag dimension inputfile")
         return 1
+    '''
+    P = create_P(size, n0)
+    C = create_C(size, n0)
+    R = create_R(size)
+    result = strassen_fin(matrices[0], matrices[1], size, n0, 0, 0, 0, 0, P, C, 0, R)
+    '''
+        
     flag = int(sys.argv[1])
     dim = int(sys.argv[2])
     inputfile = sys.argv[3]
     size = get_size(dim)
-    n0 = 64
-
+    n0 = 2
     matrices = to_matrices(inputfile, dim, size)
-    P = create_P(size, n0)
-    C = create_C(size, n0)
-    result = strassen_fin(matrices[0], matrices[1], size, n0, 0, 0, 0, 0, P, C, 0)
+    result = strassen(matrices[0], matrices[1], size, n0)
     final_result(result, dim)
-
-'''
-    n0s = [16, 32, 64, 128]
-    now = datetime.now()
-    file = os.path.join("testfiles/", inputfile)
-    current_time = now.strftime("%H%M")
-    filename = "data" + current_time + ".txt"
-    finalfile = os.path.join(save_path, filename)
-    txt_file = open(finalfile, "w")
-
-    for n0 in n0s:
-        for i in range(5):
-            test(standard, matrices[0], matrices[1], size, n0, txt_file)
-        print(' ')
-        for i in range(5):
-            test(strassen, matrices[0], matrices[1], size, n0, txt_file)
-        print(' ')
-        for i in range(5):
-            test(strassen_opt, matrices[0], matrices[1], size, n0, txt_file)
-        print(' ')
-        for i in range(5):
-            test(strassen_fin, matrices[0], matrices[1], size, n0, txt_file)
-        print(' ')
-    txt_file.close()
-'''
 
 
 if __name__ == "__main__":
