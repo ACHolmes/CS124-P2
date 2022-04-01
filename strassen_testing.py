@@ -23,10 +23,12 @@ def main():
     txt_file = open(finalfile, "w")
 
     for n0 in n0s:
-        test(strassen_fin, matrices[0], matrices[1], size, n0, txt_file)
-        test(strassen, matrices[0], matrices[1], size, n0, txt_file)
-        test(standard, matrices[0], matrices[1], size, n0, txt_file)
-        test(strassen_opt, matrices[0], matrices[1], size, n0, txt_file)
+        for i in range(5):
+            test(strassen_fin, matrices[0], matrices[1], size, n0, txt_file)
+        for i in range(5):
+            test(strassen, matrices[0], matrices[1], size, n0, txt_file)
+        for i in range(5):
+            test(standard, matrices[0], matrices[1], size, n0, txt_file)
 
         print(' ')
     txt_file.close()

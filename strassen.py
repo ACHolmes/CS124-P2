@@ -76,10 +76,6 @@ def mat_add_opt(a, b, xa, ya, xb, yb, size):
             out[i][j] = a[xa + i][ya + j] + b[xb + i][yb + j]
     return out
 
-
-
-
-
 def print_submat(mat, x, y, size):
     for i in range(size):
         for j in range(size):
@@ -201,7 +197,6 @@ def create_R(size):
     out = [[0 for x in range(size)] for y in range(size)]
     return out
 
-
 def mat_sub_fin(a, b, xa, ya, xb, yb, size, S, index):
     for i in range(0, size):
         for j in range(0, size):
@@ -211,7 +206,6 @@ def mat_add_fin(a, b, xa, ya, xb, yb, size, S, index):
     for i in range(0, size):
         for j in range(0, size):
             S[index][i][j] = a[xa + i][ya + j] + b[xb + i][yb + j]
-
 
 def standard_fin(matA, matB, size, xa, ya, xb, yb, S):
     for x in range(size):
@@ -344,23 +338,14 @@ def test(alg, matA, matB, size, n0, file):
 def main():
     if (len(sys.argv) != 4):
         print("Usage: python3 strassen.py flag dimension inputfile")
-        return 1
-    '''
-    P = create_P(size, n0)
-    C = create_C(size, n0)
-    R = create_R(size)
-    result = strassen_fin(matrices[0], matrices[1], size, n0, 0, 0, 0, 0, P, C, 0, R)
-    '''
-        
-    flag = int(sys.argv[1])
+        return 1        
     dim = int(sys.argv[2])
     inputfile = sys.argv[3]
     size = get_size(dim)
-    n0 = 2
+    n0 = 32
     matrices = to_matrices(inputfile, dim, size)
     result = strassen(matrices[0], matrices[1], size, n0)
     final_result(result, dim)
-
 
 if __name__ == "__main__":
     main()

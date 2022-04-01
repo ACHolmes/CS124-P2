@@ -1,0 +1,1 @@
+STRASSEN_FIN. Size: 512, n0:  2, time: 78.84077900000001

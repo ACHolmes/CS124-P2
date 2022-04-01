@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 
 save_path = 'datalogs'
-opener = os.path.join(save_path, 'data0010.txt')
+opener = os.path.join(save_path, 'data2048.txt')
 with open(opener) as f:
     lines = f.readlines()
     lines_clean = []
@@ -30,7 +30,7 @@ with open(opener) as f:
     t_strassenfin = []
 
     for el in times:
-        idx = times.index(el) % 4
+        idx = int((times.index(el)) / 5 )
         if idx == 0:
             t_standard.append(el)
         elif idx == 1:
@@ -49,6 +49,6 @@ with open(opener) as f:
     plt.legend(loc="upper right")
     plt.xlabel('Crossover matrix size (n0)')
     plt.ylabel('Algorithm run time (s)')
-    plt.savefig('plottimes.png')
+    plt.savefig('plottimesnew.png')
     plt.show()
     
